@@ -27,7 +27,7 @@ _**Note**: Depending on your Docker configuration, the following commands must b
 The provided Docker image is based on a minimally sized Ubuntu OS. Among others, it includes the compilation and installation of [SciDB](http://www.paradigm4.com/), [GDAL](http://gdal.org/), SciDB extensions ([scidb4geo](https://github.com/appelmar/scidb4geo),  [scidb4gdal](https://github.com/appelmar/scidb4gdal)) and the installation of all dependencies. The image will take around 15 GBs of disk space. It can be created by executing:
 
 ```
-docker build --tag="scidb-eo:gmd" https://github.com/appelmar/scidb-eo-gmd.git
+docker build --tag="scidb-eo:gmddemo" https://github.com/appelmar/scidb-eo-gmddemo.git
 ``` 
 
 _Note that by default, this includes a rather careful SciDB configuration with relatively little demand for main memory. You may modify `conf/scidb_docker.ini` if you have a powerful machine._
@@ -43,7 +43,7 @@ _Note that the following commands limit the number of CPU cores and main memory 
 **Monitoring changes in Landsat NDVI time series:**
 
 ```
-docker run --name="scidbeo-gmd" --ipc="host" --rm --cpuset-cpus="0,1" -m "4G" -h "scidbeo-gmd" -v $PWD/studycases/LANDSAT-BFAST:/opt/run/  scidb-eo:gmd "/opt/run.sh"
+docker run --name="scidbeo-gmddemo" --ipc="host" --rm --cpuset-cpus="0,1" -m "4G" -h "scidbeo-gmddemo" -v $PWD/studycases/LANDSAT-BFAST:/opt/run/  scidb-eo:gmddemo "/opt/run.sh"
 ```
 
 
@@ -62,8 +62,8 @@ Once the analysis has been finished, you should see generated result figures as 
 ### 4. Clean up
 To clean up your system, you can remove containers and the image with
 
-1. `docker rm scidbeo-gmd` (only needed if container didn't run with `--rm`), and 
-2. `docker rmi scidb-eo:gmd`.
+1. `docker rm scidbeo-gmddemo` (only needed if container didn't run with `--rm`), and 
+2. `docker rmi scidb-eo:gmddemo`.
 
 
 
