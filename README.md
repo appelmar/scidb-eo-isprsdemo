@@ -27,7 +27,7 @@ _**Note**: Depending on your Docker configuration, the following commands must b
 The provided Docker image is based on a minimally sized Ubuntu OS. Among others, it includes the compilation and installation of [SciDB](http://www.paradigm4.com/), [GDAL](http://gdal.org/), SciDB extensions ([scidb4geo](https://github.com/appelmar/scidb4geo),  [scidb4gdal](https://github.com/appelmar/scidb4gdal)) and the installation of all dependencies. The image will take around 15 GBs of disk space. It can be created by executing:
 
 ```
-docker build --tag="scidb-eo:gmd" . # don't miss the dot
+docker build --tag="scidb-eo:gmd" https://github.com/appelmar/scidb-eo-gmd.git
 ``` 
 
 _Note that by default, this includes a rather careful SciDB configuration with relatively little demand for main memory. You may modify `conf/scidb_docker.ini` if you have a powerful machine._
