@@ -109,7 +109,7 @@ The analysis in this example looks at 53 scenes of the daily accumulated rainfal
 | install/install_gdal.sh | Installs GDAL with SciDB driver |
 | install/install_R.sh | Installs the latest R version  |
 | install/install_r_exec.sh | Installs the r_exec SciDB plugin to run R functions in AFL queries including Rserve |
-| install/scidb-15.7.0.9267.tgz| SciDB source code |
+| install/scidb-15.7.0.9267.tgz| SciDB 15.7 source code |
 | conf/ | Directory for configuration files |
 | conf/scidb_docker.ini | SciDB configuration file |
 | conf/supervisord.conf | Configuration file to manage automatic starts in Docker containers |
@@ -117,8 +117,8 @@ The analysis in this example looks at 53 scenes of the daily accumulated rainfal
 | conf/shim.conf | Default configuration file for shim |
 | studycases/ | Directory with scripts and data of the study cases |
 | Dockerfile | Docker image definition file |
-| container_startup.sh | Script that is automatically executed after the Docker container has started  |
-| install.sh | Script to create and run a new SciDB Docker container  |
+| container_startup.sh | Script that starts SciDB, Rserve, and other system services within a container  |
+| run.sh | Script that calls container_startup.sh and starts Rscript /opt/run/run.R if available within the container, can be used as container CMD instruction |
 
 
 ## References
