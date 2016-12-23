@@ -3,7 +3,7 @@ A Docker image and two study cases to demonstrate how to run open and scalable E
 
 ---
 
-This Docker image demonstrates how to run Earth observation (EO) analytics with [SciDB](http://www.paradigm4.com/), its extensions [scidb4geo](https://github.com/appelmar/scidb4geo) and  [scidb4gdal](https://github.com/appelmar/scidb4gdal), and [GDAL](http://gdal.org/). It includes
+This Docker image demonstrates how to run Earth observation (EO) analytics with [SciDB](http://www.paradigm4.com/) (15.7), its extensions [scidb4geo](https://github.com/appelmar/scidb4geo) and  [scidb4gdal](https://github.com/appelmar/scidb4gdal), and [GDAL](http://gdal.org/) (2.1.0). It includes:
 
 * scripts, code, and a `Dockerfile` to create a Docker image with all required software
 
