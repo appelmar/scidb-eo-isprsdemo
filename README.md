@@ -130,6 +130,12 @@ This Docker image contains source code of SciDB in install/scidb-15.7.0.9267.tgz
 
 License of this Docker image can be found in the `LICENSE`file.
 
+
+
+## Notes
+Building the image includes both compiling softwar from sources and installing packages from binaries. Some installations require downloading files (e.g. GDAL source code), which is not provided within this image. If these links are not available or URLs are changed in the futre, the build procedure might fail. Please feel free so report any issues to the author. 
+
+
 ----
 
 ## Author
