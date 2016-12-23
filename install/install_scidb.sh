@@ -105,6 +105,8 @@ PATH=/opt/scidb/15.7/bin:$PATH
 rm /home/scidb/.scidbpw
 EOF
 
+rm -Rf $SCIDB_SOURCE_PATH
+
 echo -e "\nDONE. If not yet done, please remember to remove /opt/.scidbpass after finishing your SciDB cluster installation."
 
 
