@@ -6,7 +6,7 @@ echo -e "Starting system services (including SciDB, shim, and Rserve)..."
 if [ -f /opt/run/run.R ]
   then
     # 2. run the actual analysis
-    echo -e "Starting R script container..."
+    echo -e "Running R script /opt/run/run.R in container..."
     cd /opt/run &&  Rscript run.R
 	echo -e "Finished R script."
 fi
