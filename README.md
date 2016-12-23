@@ -133,7 +133,7 @@ License of this Docker image can be found in the `LICENSE`file.
 
 
 ## Notes
-Building the image includes both compiling softwar from sources and installing packages from binaries. Some installations require downloading files (e.g. GDAL source code), which is not provided within this image. If these links are not available or URLs are changed in the futre, the build procedure might fail. Please feel free so report any issues to the author. 
+Building the image includes both compiling software from sources and installing binaries. Some installations require downloading files  which are not provided within this image (e.g. GDAL source code). If these links are not available or URLs become invalid, the build procedure might fail. Please feel free to report any issues to the author. 
 
 
 ----
