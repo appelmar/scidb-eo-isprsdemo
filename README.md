@@ -1,4 +1,4 @@
-# scidb-eo:gmd 
+# scidb-eo:gmddemo 
 A Docker image and two study cases to demonstrate how to run open and scalable Earth observation analytics with [SciDB](http://www.paradigm4.com/), [GDAL](http://gdal.org/), and [R](https://www.r-project.org/)
 
 ---
@@ -27,7 +27,8 @@ _**Note**: Depending on your Docker configuration, the following commands must b
 The provided Docker image is based on a minimally sized Ubuntu OS. Among others, it includes the compilation and installation of [SciDB](http://www.paradigm4.com/), [GDAL](http://gdal.org/), SciDB extensions ([scidb4geo](https://github.com/appelmar/scidb4geo),  [scidb4gdal](https://github.com/appelmar/scidb4gdal)) and the installation of all dependencies. The image will take around 15 GBs of disk space. It can be created by executing:
 
 ```
-docker build --tag="scidb-eo:gmddemo" https://github.com/appelmar/scidb-eo-gmddemo.git
+git clone https://github.com/appelmar/scidb-eo-gmddemo.git && cd scidb-eo-gmddemo
+docker build --tag="scidb-eo:gmddemo" . # don't miss the dot
 ``` 
 
 _Note that by default, this includes a rather careful SciDB configuration with relatively little demand for main memory. You may modify `conf/scidb_docker.ini` if you have a powerful machine._
@@ -50,7 +51,7 @@ docker run --name="scidbeo-gmddemo" --ipc="host" --rm --cpuset-cpus="0,1" -m "4G
 **Computation of EOFs from TRMM precipitation observations:**
 
 ```
-docker run --name="scidbeo-gmd" --ipc="host" --rm --cpuset-cpus="0,1" -m "4G" -h "scidbeo-gmd" -v $PWD/studycases/TRMM-EOF:/opt/run/  scidb-eo:gmd "/opt/run.sh"
+docker run --name="scidbeo-gmddemo" --ipc="host" --rm --cpuset-cpus="0,1" -m "4G" -h "scidbeo-gmddemo" -v $PWD/studycases/TRMM-EOF:/opt/run/  scidb-eo:gmddemo "/opt/run.sh"
 ```
 
 
