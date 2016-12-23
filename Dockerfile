@@ -6,7 +6,7 @@ RUN echo 'xxxx.xxxx.xxxx'  >> /opt/.scidbpw
 RUN chmod 600 /opt/.scidbpw
 
 ARG SCIDB_HOSTNAME
-ENV SCIDB_HOSTNAME ${SCIDB_HOSTNAME:-scidbeo-gmd}
+ENV SCIDB_HOSTNAME ${SCIDB_HOSTNAME:-scidbeo-gmddemo}
 ENV HOSTNAME $SCIDB_HOSTNAME
 
 EXPOSE 22 8083 1239 5432 
