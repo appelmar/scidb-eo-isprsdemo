@@ -15,7 +15,7 @@ To run the study cases, you have to build the Docker image first and run a conta
 ## Prerequisites
 - [Docker Engine](https://www.docker.com/products/docker-engine) (>1.10.0) 
 - Around 15 GBs free disk space 
-
+- Internet connection to download software and dependencies
 
 
 ## Getting started
