@@ -53,12 +53,18 @@ WORKDIR /home/root/install
 
 # Install SciDB
 COPY conf/iquery.conf /home/root/conf/
-COPY conf/scidb_docker.ini /home/root/conf/
 COPY install/scidb-15.7.0.9267.tgz  /home/root/install/
 COPY install/install_scidb.sh  /home/root/install/
-RUN chmod +x install_scidb.sh && sed -i 's/db_passwd.*/#db_passwd/g' /home/root/conf/scidb_docker.ini && echo "db_passwd=$(cat /opt/.scidbpw)" >> /home/root/conf/scidb_docker.ini
-RUN export HOSTNAME=$SCIDB_HOSTNAME && /etc/init.d/ssh start && echo $(grep $(hostname) /etc/hosts | cut -f1) $SCIDB_HOSTNAME >> /etc/hosts && echo $SCIDB_HOSTNAME > /etc/hostname  && ./install_scidb.sh
+RUN chmod +x install_scidb.sh; sync && export HOSTNAME=$SCIDB_HOSTNAME && /etc/init.d/ssh start && echo $(grep $(hostname) /etc/hosts | cut -f1) $SCIDB_HOSTNAME >> /etc/hosts && echo $SCIDB_HOSTNAME > /etc/hostname  && ./install_scidb.sh
 
+# Install GDAL
+COPY install/install_gdal.sh /home/root/install/
+RUN chmod +x install_gdal.sh; sync &&  ./install_gdal.sh
+
+# Initialize SciDB
+COPY conf/scidb_docker.ini /home/root/conf/
+COPY install/init_scidb.sh  /home/root/install/
+RUN chmod +x init_scidb.sh; sync && sed -i 's/db_passwd.*/#db_passwd/g' /home/root/conf/scidb_docker.ini && echo "db_passwd=$(cat /opt/.scidbpw)" >> /home/root/conf/scidb_docker.ini && export HOSTNAME=$SCIDB_HOSTNAME && /etc/init.d/ssh start && echo $(grep $(hostname) /etc/hosts | cut -f1) $SCIDB_HOSTNAME >> /etc/hosts && echo $SCIDB_HOSTNAME > /etc/hostname  && ./init_scidb.sh
 
 # Install shim
 COPY install/install_shim.sh /home/root/install/
@@ -68,10 +74,6 @@ RUN chmod +x install_shim.sh; sync && export HOSTNAME=$SCIDB_HOSTNAME && /etc/in
 # Install scidb4geo
 COPY install/install_scidb4geo.sh /home/root/install/
 RUN chmod +x install_scidb4geo.sh; sync && export HOSTNAME=$SCIDB_HOSTNAME && /etc/init.d/ssh start && service postgresql start && echo $(grep $(hostname) /etc/hosts | cut -f1) $SCIDB_HOSTNAME >> /etc/hosts && echo $SCIDB_HOSTNAME > /etc/hostname && cd /home/root/install && ./install_scidb4geo.sh
-
-# Install GDAL
-COPY install/install_gdal.sh /home/root/install/
-RUN chmod +x install_gdal.sh; sync &&  ./install_gdal.sh
 
 # Install R 
 COPY install/install_R.sh /home/root/install/

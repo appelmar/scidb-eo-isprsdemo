@@ -39,6 +39,7 @@ for (i in 2:nrow(image.files))
 }
 
 
+Sys.sleep(20)
 
 
 

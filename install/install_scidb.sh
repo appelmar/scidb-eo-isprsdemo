@@ -26,13 +26,9 @@ su scidb -c"yes | ssh-copy-id -i /home/scidb/.ssh/id_rsa.pub  'scidb@127.0.0.1'"
 
 
 #********************************************************
-echo "***** Installing SciDB..."
+echo "***** Compiling SciDB..."
 #********************************************************
 
-# Extract source code
-cd /home/root/
-tar -xzf /home/root/install/scidb-15.7.0.9267.tgz
-mv scidb-15.7.0.9267 scidbtrunk
 
 export SCIDB_VER=15.7
 export SCIDB_SOURCE_PATH=/home/root/scidbtrunk
@@ -51,12 +47,19 @@ echo "PATH=${SCIDB_INSTALL_PATH}/bin:$PATH" >> /etc/profile # appending does not
 
 
 
+# Extract source code
+cd /home/root/
+tar -xzf /home/root/install/scidb-15.7.0.9267.tgz
+mv scidb-15.7.0.9267 scidbtrunk
+
+
+
 # Install dependencies
 apt-get install -y --force-yes --no-install-recommends software-properties-common
 add-apt-repository -y ppa:ubuntu-toolchain-r/test # needed for gcc-4.9,g++-4.9, and gfortran-4.9
 add-apt-repository -y ppa:openjdk-r/ppa
 apt-get update
-apt-get install -y --force-yes --no-install-recommends expect make gcc-4.9 g++-4.9 cmake gfortran-4.9 g++ protobuf-compiler libprotobuf-dev liblog4cxx10-dev flex bison libbz2-dev libpqxx3-dev libreadline-dev libblas-dev liblapack-dev openjdk-8-jdk libcppunit-dev dpkg-dev mpich2 libmpich2-dev libscalapack-mpi-dev libscalapack-mpi1 ant ant-contrib junit libprotobuf-java unzip
+apt-get install -y --force-yes --no-install-recommends expect make gcc-4.9 g++-4.9 cmake gfortran-4.9 g++ protobuf-compiler libprotobuf-dev liblog4cxx10-dev flex bison libbz2-dev libpqxx3-dev libreadline-dev libfile-fcntllock-perl libblas-dev liblapack-dev openjdk-8-jdk libcppunit-dev dpkg-dev mpich2 libmpich2-dev libscalapack-mpi-dev libscalapack-mpi1 ant ant-contrib junit libprotobuf-java unzip
 
 
 wget -O- https://downloads.paradigm4.com/key | apt-key add -
@@ -76,38 +79,10 @@ export BOOST_INCLUDEDIR=/usr/include/
 ./deployment/deploy.sh build_fast /tmp/packages # build .deb packages
 ./deployment/deploy.sh scidb_install /tmp/packages $HOSTNAME # install to /opt/scidb/15.7
 
-# replace config.ini
-sed -i "s/localhost/$HOSTNAME/g" /home/root/conf/scidb_docker.ini
-cp /home/root/conf/scidb_docker.ini ${SCIDB_INSTALL_PATH}/etc/config.ini
-
-#su postgres -c"psql -c\"CREATE ROLE scidb SUPERUSER LOGIN CREATEROLE CREATEDB UNENCRYPTED PASSWORD '${PW}';\" "
-cd $SCIDB_SOURCE_PATH
-deployment/deploy.sh prepare_postgresql postgres $PW 0.0.0.0/0 $HOSTNAME
-su postgres -c"/opt/scidb/15.7/bin/scidb.py init-syscat scidb_docker -p ${PW}"
 
 
 
-# Run SciDB as scidb system user
 
-echo $PW > /home/scidb/.scidbpw # will be deeleted...
-chown -R scidb:scidb /home/scidb
-
-su scidb <<'EOF'
-cd ~
-export PGPASSWORD=`cat /home/scidb/.scidbpw`
-echo -e "${HOSTNAME}:5432:scidb_docker:scidb:${PGPASSWORD}\n" >> ~/.pgpass # to be removed
-chmod 0600 ~/.pgpass # this is important, otherwise file will be ignored
-/opt/scidb/15.7/bin/scidb.py initall-force scidb_docker
-echo 'PATH="/opt/scidb/15.7/bin:$PATH"' >> $HOME/.bashrc # Add scidb binaries to PATH
-/opt/scidb/15.7/bin/scidb.py startall scidb_docker
-source ~/.bashrc
-PATH=/opt/scidb/15.7/bin:$PATH
-rm /home/scidb/.scidbpw
-EOF
-
-rm -Rf $SCIDB_SOURCE_PATH
-
-echo -e "\nDONE. If not yet done, please remember to remove /opt/.scidbpass after finishing your SciDB cluster installation."
 
 
 

@@ -49,6 +49,7 @@ while (i <= nrow(image.files))
 cat("\nDONE.\n")
 
 
+Sys.sleep(20)
 
 
 #### ANALYZE #####

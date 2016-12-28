@@ -105,6 +105,7 @@ The analysis in this example looks at 53 scenes of the daily accumulated rainfal
 | :------------- | :-------------------------------------------------------| 
 | install/ | Directory for installation scripts |
 | install/install_scidb.sh | Installs SciDB 15.7 from sources |
+| install/init_scidb.sh | Initializes SciDB based on provided configuration file |
 | install/install_shim.sh | Installs Shim |
 | install/install_scidb4geo.sh | Installs the scidb4geo plugin |
 | install/install_gdal.sh | Installs GDAL with SciDB driver |
@@ -134,7 +135,7 @@ License of this Docker image can be found in the `LICENSE`file.
 
 
 ## Notes
-Building the image includes both compiling software from sources and installing binaries. Some installations require downloading files  which are not provided within this image (e.g. GDAL source code). If these links are not available or URLs become invalid, the build procedure might fail. Please feel free to report any issues to the author. 
+This Docker image is for demonstration purposes only. Building the image includes both compiling software from sources and installing binaries. Some installations require downloading files which are not provided within this image (e.g. GDAL source code). If these links are not available or URLs become invalid, the build procedure might fail. Furthermore, since these downloads mostly install most recent versions of the libraries, potential incompatibilities or API changes in future versions may make this image build fail. Please feel free to report any issues to the author. 
 
 
 ----

@@ -18,11 +18,11 @@ sleep 5
 echo -e "... scidb started"
 
 service shimsvc start  
-sleep 2
+sleep 5
 echo -e "... shim started"
 
 R CMD Rserve --vanilla &>/dev/null
-sleep 1
+sleep 2
 echo -e "... rserve started"
 
 
