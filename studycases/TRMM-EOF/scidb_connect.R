@@ -4,12 +4,12 @@ retrywait <- function(expr, nmax=8) {
   for (i in 1:nmax) {
     tryCatch(
       expr = {
-        return(eval.parent(substitute(expr)))
+        suppressWarnings(return(eval.parent(substitute(expr))))
       }, 
       error = function(e) {
         lasterror <<- e
         if (i < nmax) Sys.sleep(2^(i-1))
-      }, silent=F)
+      })
   }
   stop(paste("No success after", nmax, "retries:", lasterror))
 }
