@@ -138,6 +138,11 @@ License of this Docker image can be found in the `LICENSE`file.
 This Docker image is for demonstration purposes only. Building the image includes both compiling software from sources and installing binaries. Some installations require downloading files which are not provided within this image (e.g. GDAL source code). If these links are not available or URLs become invalid, the build procedure might fail. Furthermore, since these downloads mostly install most recent versions of the libraries, potential incompatibilities or API changes in future versions may make this image build fail. Please feel free to report any issues to the author. 
 
 
+## Known issues
+
+1. When Docker runs in a virtual machine, the connection from R to shim sometimes fails with errors in `curl_fetch_memory`. As a workaround, running SciDB commands will be retried up to 8 times with `Sys.sleep` between individual attempts. If the connection still fails, the container will stop and shut down. 
+
+
 ----
 
 ## Author

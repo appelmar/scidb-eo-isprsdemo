@@ -5,6 +5,9 @@ suppressMessages(library(raster))
 source("scidb_connect.R")
 
 
+# Remove previous results
+invisible(suppressWarnings(file.remove(c("changes.png"))))
+
 
 #### INGEST #####
 message("1. Ingesting Landsat NDVI data to a three-dimensional SciDB array... ")
@@ -49,16 +52,15 @@ while (i <= nrow(image.files))
 cat("\nDONE.\n")
 
 
-Sys.sleep(20)
 
 
 #### ANALYZE #####
 source("scidb_connect.R")
-l7.ref = scidb("L7_SW_ETHIOPIA")
-l7.ref = subset(l7.ref,"band1 > -9999 and band1 <= 10000") # leave out missing data and clouds (20000)
-l7.ref = transform(l7.ref,ndvi = "double(band1) / 10000")$ndvi
-l7.ref = transform(l7.ref, dimx="double(x)", dimy="double(y)", dimt="double(t)")
-l7.ref = repart(l7.ref,chunk=c(64,64,4161))
+l7.ref = retrywait(scidb("L7_SW_ETHIOPIA"))
+l7.ref = retrywait(subset(l7.ref,"band1 > -9999 and band1 <= 10000")) # leave out missing data and clouds (20000)
+l7.ref = retrywait(transform(l7.ref,ndvi = "double(band1) / 10000")$ndvi)
+l7.ref = retrywait(transform(l7.ref, dimx="double(x)", dimy="double(y)", dimt="double(t)"))
+l7.ref = retrywait(repart(l7.ref,chunk=c(64,64,4161)))
 
 message("2. Reshaping array...")
 scidbeval(l7.ref, name="L7_SW_ETHIOPIA_TCHUNK")
@@ -85,12 +87,15 @@ list(dimy = as.double(ndvi.change$dimy), dimx = as.double(ndvi.change$dimx), nt 
 ", "L7_SW_ETHIOPIA_ROUT" ,")", sep="")
 
 message("3. Running change detection in time series...")
-iquery(query.R)
+retrywait(iquery(query.R))
 
 schema = "<nt:int16,breakpoint:double,magnitude:double>[y=0:334,2048,0,x=-167:334,2048,0]"
-scidbeval(redimension(transform(scidb("L7_SW_ETHIOPIA_ROUT"), y="int64(expr_value_0)", x="int64(expr_value_1)", nt = "int16(expr_value_2)", breakpoint = "expr_value_3", magnitude="expr_value_4"),schema = schema), name="L7_SW_ETHIOPIA_CHANGEMAP")
-iquery("eo_setsrs(L7_SW_ETHIOPIA_CHANGEMAP,L7_SW_ETHIOPIA)")
+retrywait(scidbeval(redimension(transform(scidb("L7_SW_ETHIOPIA_ROUT"), y="int64(expr_value_0)", x="int64(expr_value_1)", nt = "int16(expr_value_2)", breakpoint = "expr_value_3", magnitude="expr_value_4"),schema = schema), name="L7_SW_ETHIOPIA_CHANGEMAP"))
+retrywait(iquery("eo_setsrs(L7_SW_ETHIOPIA_CHANGEMAP,L7_SW_ETHIOPIA)"))
 
+
+
+#### DOWNLOAD #####
 message("4. Downloading results...")
 x = stack(readGDAL("SCIDB:array=L7_SW_ETHIOPIA_CHANGEMAP"))
 

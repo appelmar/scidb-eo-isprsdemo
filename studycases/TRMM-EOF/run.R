@@ -1,5 +1,6 @@
 ## GLOBAL DEFINITIONS
 sink(file="/tmp/rout.txt")
+
 suppressMessages(library(gdalUtils))
 suppressMessages(library(rgdal))
 
@@ -10,7 +11,8 @@ nt = 53
 ns = 1440*400
 n.eof = 4 # extract only first EOFs
 
-
+# Remove previous results
+invisible(suppressWarnings(file.remove(c("EOF.png", "EOF.vrt", list.files(pattern="*.tif$")))))
 
 
 ## 1. INGEST DATA TO 3D SCIDB ARRAY ##
@@ -39,30 +41,29 @@ for (i in 2:nrow(image.files))
 }
 
 
-Sys.sleep(20)
 
 
 
 ## 2. RUN EOF ANALYSIS IN SCIDB ##
-source("scidb_connect.R")
 message("2. Computing EOFs in SciDB...")
-trmm.ref = scidb("TRMM3B42_DAILY")
+source("scidb_connect.R")
+trmm.ref = retrywait(scidb("TRMM3B42_DAILY"))
 
 # Create an array that maps time index to columns in the data matrix after removing incomplete images
-t.complete =  unpack(subset(aggregate(subset(trmm.ref, "band1 >= 0"),by="t",FUN="count(*)"),"count = 576000"))$t
-t.complete = redimension(t.complete,schema="<i:int64>[t=0:52,53,0]")
-scidbeval(t.complete,name="TRMM3B42_EXPERIMENT_EOFSCALABILITY_COMPLETE_IMAGES_T")
-t.complete = scidb("TRMM3B42_EXPERIMENT_EOFSCALABILITY_COMPLETE_IMAGES_T")
-nt.nonempty = aggregate(t.complete,FUN="count(*)")[]$count
+t.complete =   retrywait(unpack(subset(aggregate(subset(trmm.ref, "band1 >= 0"),by="t",FUN="count(*)"),"count = 576000"))$t)
+t.complete =  retrywait(redimension(t.complete,schema="<i:int64>[t=0:52,53,0]"))
+retrywait(scidbeval(t.complete,name="TRMM3B42_EXPERIMENT_EOFSCALABILITY_COMPLETE_IMAGES_T"))
+t.complete =  retrywait(scidb("TRMM3B42_EXPERIMENT_EOFSCALABILITY_COMPLETE_IMAGES_T"))
+nt.nonempty =  retrywait(aggregate(t.complete,FUN="count(*)")[]$count)
 
 # Build the data matrix and detrend the data
-trmm.subset.X.ref = redimension(cast(transform( merge(trmm.ref,t.complete, equi_join=FALSE),s="int64(x*400+y)"), paste("<band1:double,i:int64,s:int64> [y=0:399,2048,0,x=0:1439,2048,0,t=0:",nt-1, ",1,0]", sep="")),schema=paste("<band1:double>[i=0:", nt-1,", 32, 0, s=0:575999,32,0]",sep="")) 
-trmm.subset.X.ref = scidb::subarray(trmm.subset.X.ref,limits=c(0,0,nt.nonempty-1,ns-1))
-trmm.subset.X.ref = transform(merge(trmm.subset.X.ref , aggregate(trmm.subset.X.ref, by="s", "avg(band1)"), equi_join=FALSE), prec_norm = "(band1 - band1_avg)")$prec_norm
+trmm.subset.X.ref =  retrywait(redimension(cast(transform( merge(trmm.ref,t.complete, equi_join=FALSE),s="int64(x*400+y)"), paste("<band1:double,i:int64,s:int64> [y=0:399,2048,0,x=0:1439,2048,0,t=0:",nt-1, ",1,0]", sep="")),schema=paste("<band1:double>[i=0:", nt-1,", 32, 0, s=0:575999,32,0]",sep="")))
+trmm.subset.X.ref =  retrywait(scidb::subarray(trmm.subset.X.ref,limits=c(0,0,nt.nonempty-1,ns-1)))
+trmm.subset.X.ref =  retrywait(transform(merge(trmm.subset.X.ref , aggregate(trmm.subset.X.ref, by="s", "avg(band1)"), equi_join=FALSE), prec_norm = "(band1 - band1_avg)")$prec_norm)
 
 # Run SVD to compute EOFs
-trmm.subset.X.svd.R = scidb::subarray(gesvd(trmm.subset.X.ref, type="right"),limits=c(0,0,n.eof-1,ns-1))
-trmm.subset.X.svd.EOF.map = redimension(transform(trmm.subset.X.svd.R ,y="int64(s % 400)", x="int64(floor(s / 400))"),schema=paste("<v:double NOT NULL>[y=0:399,400,0, x=0:1439,1440, 0, i=0:", n.eof - 1, ",1,0]", sep="")) 
+trmm.subset.X.svd.R =  retrywait(scidb::subarray(gesvd(trmm.subset.X.ref, type="right"),limits=c(0,0,n.eof-1,ns-1)))
+trmm.subset.X.svd.EOF.map =  retrywait(redimension(transform(trmm.subset.X.svd.R ,y="int64(s % 400)", x="int64(floor(s / 400))"),schema=paste("<v:double NOT NULL>[y=0:399,400,0, x=0:1439,1440, 0, i=0:", n.eof - 1, ",1,0]", sep="")))
 
 # Run all previous operations and store result as a new array
 scidbeval(trmm.subset.X.svd.EOF.map,name="TRMM3B42_EXPERIMENT_EOFSCALABILITY_EOF_S")
